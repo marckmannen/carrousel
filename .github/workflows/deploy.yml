@@ -1,35 +1,22 @@
 name: Deploy
-
 on:
   push:
     branches:
       - main
-
 jobs:
   deploy:
-    runs-on: ubuntu-latest
-
+    runs-on: self-hosted
     steps:
-    - name: Set up SSH agent
-      uses: webfactory/ssh-agent@v0.9.1
-      with:
-        ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
-
-    - name: Add server to known_hosts
-      run: ssh-keyscan -p 8002 145.24.237.43 >> ~/.ssh/known_hosts
-
     - name: Deploy
       run: |
-        ssh -p 8002 karsten@145.24.237.43 << 'EOF'
-          cd website/carrousel
-          git reset --hard HEAD
-          git clean -fd
-          git pull origin main
-          rm -rf vendor/
-          composer install --no-dev --optimize-autoloader --no-interaction
-          php artisan migrate --force
-          php artisan config:clear
-          php artisan cache:clear
-          php artisan route:cache
-          php artisan view:cache
-          EOF  
+        cd ~/website/carrousel
+        git reset --hard HEAD
+        git clean -fd
+        git pull origin main
+        rm -rf vendor/
+        composer install --no-dev --optimize-autoloader --no-interaction
+        php artisan migrate --force
+        php artisan config:clear
+        php artisan cache:clear
+        php artisan route:cache
+        php artisan view:cache
