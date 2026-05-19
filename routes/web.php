@@ -8,7 +8,7 @@ Route::get('/', function () {
 });
 
 Route::get('api/health', function () {
-    return response()->json(['status' => 'ok']);
+    return response()->json(['status' => 'ok', 'timestamp' => now()->toDateTimeString()]);
 })->name('api.health');
 
 Route::get('/dashboard', function () {
