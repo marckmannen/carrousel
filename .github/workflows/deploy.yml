@@ -16,6 +16,8 @@ jobs:
         git pull origin main
         rm -rf vendor/
         composer install --no-dev --optimize-autoloader --no-interaction
+        docker compose exec -T webserver npm ci
+        docker compose exec -T webserver npm run build
         docker compose exec -T webserver php artisan migrate --force
         docker compose exec -T webserver php artisan config:clear
         docker compose exec -T webserver php artisan cache:clear
