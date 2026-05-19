@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\Auth\RegisteredUserController;
 
 Route::get('/', function () {
     return view('auth.login');
@@ -26,7 +27,11 @@ Route::middleware('auth')->group(function () {
 });
 
 Route::middleware(['auth', 'can:admin'])->group(function () {
-    // admin only
+    Route::get('/admin', function () {
+        return view('admin.dashboard');
+    })->name('admin.dashboard');;
+    Route::get('/register', [RegisteredUserController::class, 'create']);
+    Route::post('/register', [RegisteredUserController::class, 'store']);
 });
 
 require __DIR__.'/auth.php';
