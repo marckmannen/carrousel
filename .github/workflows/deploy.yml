@@ -21,3 +21,5 @@ jobs:
         docker compose exec -T webserver php artisan cache:clear
         docker compose exec -T webserver php artisan route:cache
         docker compose exec -T webserver php artisan view:cache
+        docker compose exec -T webserver chown -R www-data:www-data storage bootstrap/cache
+        docker compose exec -T webserver chmod -R 775 storage bootstrap/cache
