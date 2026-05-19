@@ -10,6 +10,7 @@ jobs:
     - name: Deploy
       run: |
         cd ~/website/carrousel
+        sudo chown -R karsten:karsten .
         git reset --hard HEAD
         git clean -fd
         git pull origin main
