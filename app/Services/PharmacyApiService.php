@@ -20,9 +20,9 @@ class PharmacyApiService
     /**
      * The pharmacy ID for this pharmacy.
      *
-     * @var string
+     * @var string|null
      */
-    protected string $pharmacyId;
+    protected ?string $pharmacyId;
 
     /**
      * Timeout for API requests in milliseconds.
