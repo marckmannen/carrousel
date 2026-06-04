@@ -66,9 +66,15 @@
                         <dd class="mt-1 text-sm text-gray-900 dark:text-gray-100">{{ $order->product_id }}</dd>
                     </div>
                     @if($order->pincode)
-                        <div>
+                        <div x-data="{ show: false }">
                             <dt class="text-sm font-medium text-gray-500 dark:text-gray-400">Pincode</dt>
-                            <dd class="mt-1 text-sm font-mono font-bold text-gray-900 dark:text-gray-100 text-lg">{{ $order->pincode }}</dd>
+                            <dd class="mt-1 flex items-center gap-2">
+                                <span class="text-sm font-mono font-bold text-gray-900 dark:text-gray-100 text-lg" x-show="show">{{ $order->pincode }}</span>
+                                <span class="text-sm font-mono font-bold text-gray-900 dark:text-gray-100 text-lg" x-show="!show">{{ str_repeat('*', strlen('{{ $order->pincode }}')) }}</span>
+                                <button type="button" @click="show = !show" class="text-xs text-indigo-600 hover:text-indigo-900 dark:text-indigo-400 dark:hover:text-indigo-300">
+                                    <span x-text="show ? 'Verbergen' : 'Tonen'"></span>
+                                </button>
+                            </dd>
                         </div>
                     @endif
                 </dl>
@@ -117,8 +123,7 @@
                             <label for="pincode" class="block text-sm font-medium text-gray-700 dark:text-gray-300">
                                 Pincode
                             </label>
-                            <input type="text" name="pincode" id="pincode" required minlength="4"
-                                value="{{ $order->pincode }}"
+                            <input type="password" name="pincode" id="pincode" required minlength="4" maxlength="10"
                                 class="mt-1 block w-32 rounded-md border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 text-sm">
                         </div>
                         <div class="mt-6 flex justify-end gap-3">

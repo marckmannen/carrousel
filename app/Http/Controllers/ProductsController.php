@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Services\PharmacyApiService;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\View\View;
 use Illuminate\Http\RedirectResponse;
 
@@ -18,11 +19,7 @@ class ProductsController extends Controller
      */
     public function index(): View
     {
-        try {
-            $products = $this->pharmacyApi->getProducts();
-        } catch (\Exception $e) {
-            $products = [];
-        }
+        $products = $this->getProductsFromCache();
 
         return view('products.index', compact('products'));
     }
@@ -48,16 +45,28 @@ class ProductsController extends Controller
     public function search(Request $request): View
     {
         $query = $request->input('q', '');
+        $products = $this->getProductsFromCache();
 
-        try {
-            $allProducts = $this->pharmacyApi->getProducts();
-            $products = collect($allProducts)->filter(function ($product) use ($query) {
+        if (!empty($query)) {
+            $products = collect($products)->filter(function ($product) use ($query) {
                 return str_contains(strtolower($product['name'] ?? ''), strtolower($query));
             })->values()->all();
-        } catch (\Exception $e) {
-            $products = [];
         }
 
         return view('products.index', compact('products', 'query'));
+    }
+
+    /**
+     * Get products with caching to avoid repeated API calls.
+     */
+    protected function getProductsFromCache(): array
+    {
+        try {
+            return Cache::remember('pharmacy.products', now()->addMinutes(15), function () {
+                return $this->pharmacyApi->getProducts();
+            });
+        } catch (\Exception) {
+            return [];
+        }
     }
 }

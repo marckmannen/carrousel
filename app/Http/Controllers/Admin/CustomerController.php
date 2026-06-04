@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\User;
+use App\Traits\ManagesCustomers;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
@@ -12,6 +13,8 @@ use Illuminate\View\View;
 
 class CustomerController extends Controller
 {
+    use ManagesCustomers;
+
     /**
      * List all customer (non-admin) accounts.
      */
@@ -60,9 +63,7 @@ class CustomerController extends Controller
      */
     public function show(User $customer): View
     {
-        if ($customer->isAdmin()) {
-            abort(403);
-        }
+        $this->ensureNotAdmin($customer);
 
         $orders = $customer->orders()->latest()->get();
 
@@ -74,9 +75,7 @@ class CustomerController extends Controller
      */
     public function edit(User $customer): View
     {
-        if ($customer->isAdmin()) {
-            abort(403);
-        }
+        $this->ensureNotAdmin($customer);
 
         return view('admin.customers.edit', compact('customer'));
     }
@@ -86,9 +85,7 @@ class CustomerController extends Controller
      */
     public function update(Request $request, User $customer): RedirectResponse
     {
-        if ($customer->isAdmin()) {
-            abort(403);
-        }
+        $this->ensureNotAdmin($customer);
 
         $validated = $request->validate([
             'name' => ['required', 'string', 'max:255'],
@@ -106,9 +103,7 @@ class CustomerController extends Controller
      */
     public function editPassword(User $customer): View
     {
-        if ($customer->isAdmin()) {
-            abort(403);
-        }
+        $this->ensureNotAdmin($customer);
 
         return view('admin.customers.password', compact('customer'));
     }
@@ -118,9 +113,7 @@ class CustomerController extends Controller
      */
     public function updatePassword(Request $request, User $customer): RedirectResponse
     {
-        if ($customer->isAdmin()) {
-            abort(403);
-        }
+        $this->ensureNotAdmin($customer);
 
         $validated = $request->validate([
             'password' => ['required', 'confirmed', Rules\Password::defaults()],
@@ -139,9 +132,7 @@ class CustomerController extends Controller
      */
     public function destroy(User $customer): RedirectResponse
     {
-        if ($customer->isAdmin()) {
-            abort(403);
-        }
+        $this->ensureNotAdmin($customer);
 
         $customer->delete();
 

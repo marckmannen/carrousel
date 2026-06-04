@@ -1,38 +1,35 @@
 <x-app-layout>
     <x-slot name="header">
         <h2 class="font-semibold text-xl text-gray-800 dark:text-gray-200 leading-tight">
-            @if(auth()->user()->isAdmin())
+            @if($isAdmin)
                 {{ __('Apotheek Dashboard') }}
             @else
-                {{ __('Welkom, ' . auth()->user()->name)}}
+                {{ __('Welkom, ') }}{{ $user->name }}
             @endif
         </h2>
     </x-slot>
 
     <div class="py-12">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
-            @if(auth()->user()->isAdmin())
+            @if($isAdmin)
                 <!-- Admin Dashboard -->
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
                     <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg p-6">
                         <div class="text-sm font-medium text-gray-500 dark:text-gray-400">Totaal klanten</div>
                         <div class="mt-2 text-3xl font-bold text-gray-900 dark:text-gray-100">
-                            {{ \App\Models\User::where('role', '!=', 'admin')->count() }}
+                            {{ $customerCount }}
                         </div>
                     </div>
                     <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg p-6">
                         <div class="text-sm font-medium text-gray-500 dark:text-gray-400">Totaal bestellingen</div>
                         <div class="mt-2 text-3xl font-bold text-gray-900 dark:text-gray-100">
-                            {{ \App\Models\Order::count() }}
+                            {{ $orderCount }}
                         </div>
                     </div>
                     <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg p-6">
                         <div class="text-sm font-medium text-gray-500 dark:text-gray-400">Apotheek status</div>
                         <div class="mt-2">
-                            @php
-                                $api = app(\App\Services\PharmacyApiService::class);
-                            @endphp
-                            @if($api->isOnline())
+                            @if($apiOnline)
                                 <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200">
                                     ✓ Online
                                 </span>
@@ -89,9 +86,6 @@
 
                     <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg p-6">
                         <h3 class="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">Recente bestellingen</h3>
-                        @php
-                            $recentOrders = auth()->user()->orders()->latest()->limit(5)->get();
-                        @endphp
                         @if($recentOrders->isEmpty())
                             <p class="text-gray-500">Nog geen bestellingen geplaatst.</p>
                         @else

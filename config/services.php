@@ -38,6 +38,7 @@ return [
     'pharmacy' => [
         'api_url' => env('PHARMACY_API_URL', 'https://wdc.ti.datalabrotterdam.nl/api/v1'),
         'pharmacy_id' => env('PHARMACY_ID'),
+        'secret_key' => env('PHARMACY_SECRET_KEY'),
     ],
 
 ];

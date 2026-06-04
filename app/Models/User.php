@@ -18,11 +18,29 @@ class User extends Authenticatable
     use HasFactory, Notifiable;
 
     /**
+     * Valid role values for this application.
+     */
+    public const ROLE_USER = 'user';
+    public const ROLE_ADMIN = 'admin';
+
+    /**
      * Get the orders for the user.
      */
     public function orders()
     {
         return $this->hasMany(Order::class);
+    }
+
+    /**
+     * Set the role, ensuring only valid values are stored.
+     */
+    public function setRoleAttribute(string $value): void
+    {
+        if (!in_array($value, [self::ROLE_USER, self::ROLE_ADMIN], true)) {
+            $this->attributes['role'] = self::ROLE_USER;
+        } else {
+            $this->attributes['role'] = $value;
+        }
     }
 
     /**
@@ -40,6 +58,6 @@ class User extends Authenticatable
 
     public function isAdmin(): bool
     {
-        return $this->role === 'admin';
+        return $this->role === self::ROLE_ADMIN;
     }
 }

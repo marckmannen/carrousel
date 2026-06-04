@@ -76,6 +76,34 @@ class PharmacyApiService
     }
 
     /**
+     * Get the status of an order from a specific pharmacy.
+     *
+     * @param string $pharmacyId
+     * @param string $orderId
+     * @return array
+     * @throws Exception
+     */
+    public function getOrderStatusForPharmacy(string $pharmacyId, string $orderId): array
+    {
+        return $this->request('GET', "/pharmacies/{$pharmacyId}/orders/{$orderId}");
+    }
+
+    /**
+     * Cancel an order at a specific pharmacy.
+     *
+     * @param string $pharmacyId
+     * @throws Exception
+     * @return array
+     */
+    public function cancelOrderForPharmacy(string $pharmacyId, string $orderId, string $birthdate, string $pincode): array
+    {
+        return $this->request('POST', "/pharmacies/{$pharmacyId}/orders/{$orderId}/cancel", [
+            'birthdate' => $birthdate,
+            'pincode' => $pincode,
+        ]);
+    }
+
+    /**
      * Create an order at this pharmacy.
      *
      * @param int $userId
@@ -167,7 +195,7 @@ class PharmacyApiService
     {
         try {
             $product = $this->getProduct($productId);
-            return $product['name'] ?? $product['name'] ?? "Product {$productId}";
+            return $product['name'] ?? "Product {$productId}";
         } catch (Exception) {
             return "Product {$productId}";
         }

@@ -68,7 +68,25 @@
                                     <tr>
                                         <td class="px-4 py-3 text-sm text-gray-900 dark:text-gray-100">{{ $order->product_name }}</td>
                                         <td class="px-4 py-3 text-sm text-gray-500">{{ $order->amount }}</td>
-                                        <td class="px-4 py-3 text-sm text-gray-500">{{ ucfirst($order->status) }}</td>
+                                        <td class="px-4 py-3 text-sm text-gray-500">
+                                            @php
+                                                $statusLabels = [
+                                                    'pending' => 'In afwachting',
+                                                    'ready' => 'Klaar',
+                                                    'cancelled' => 'Geannuleerd',
+                                                    'rejected' => 'Afgekeurd',
+                                                ];
+                                                $statusClasses = [
+                                                    'pending' => 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200',
+                                                    'ready' => 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200',
+                                                    'cancelled' => 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200',
+                                                    'rejected' => 'bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-300',
+                                                ];
+                                            @endphp
+                                            <span class="px-2 py-0.5 text-xs font-medium rounded-full {{ $statusClasses[$order->status] ?? $statusClasses['pending'] }}">
+                                                {{ $statusLabels[$order->status] ?? $order->status }}
+                                            </span>
+                                        </td>
                                         <td class="px-4 py-3 text-sm text-gray-500">{{ $order->created_at->locale('nl')->isoFormat('DD-MM-YYYY') }}</td>
                                     </tr>
                                 @endforeach

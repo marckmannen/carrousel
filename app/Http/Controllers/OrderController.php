@@ -6,6 +6,7 @@ use App\Models\Order;
 use App\Services\PharmacyApiService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 use Illuminate\View\View;
 
 class OrderController extends Controller
@@ -31,12 +32,19 @@ class OrderController extends Controller
     {
         $validated = $request->validate([
             'product_id' => 'required|string',
-            'product_name' => 'required|string',
             'amount' => 'required|integer|min:1|max:99',
             'birthdate' => 'required|date|before:today',
         ]);
 
         try {
+            $product = $this->pharmacyApi->getProduct($validated['product_id']);
+
+            if (!$product || !isset($product['id'])) {
+                return back()
+                    ->withInput()
+                    ->withErrors(['product_id' => 'Dit product is niet gevonden of niet meer beschikbaar.']);
+            }
+
             $order = $this->pharmacyApi->createOrder(
                 auth()->id(),
                 $validated['product_id'],
@@ -47,9 +55,15 @@ class OrderController extends Controller
             return redirect()->route('orders.show', $order)
                 ->with('success', 'Bestelling succesvol geplaatst! Houd uw pincode goed bij.');
         } catch (\Exception $e) {
+            Log::error('Pharmacy API error in OrderController@store', [
+                'error' => $e->getMessage(),
+                'user_id' => auth()->id(),
+                'product_id' => $validated['product_id'],
+            ]);
+
             return back()
                 ->withInput()
-                ->with('error', $e->getMessage());
+                ->with('error', 'De apotheek is momenteel niet bereikbaar. Probeer het later opnieuw.');
         }
     }
 
@@ -84,7 +98,9 @@ class OrderController extends Controller
         ]);
 
         try {
-            $response = $this->pharmacyApi->cancelOrder(
+            $pharmacyId = $order->pharmacy_id ?? config('services.pharmacy.pharmacy_id');
+            $response = $this->pharmacyApi->cancelOrderForPharmacy(
+                $pharmacyId,
                 $order->order_id,
                 $validated['birthdate'],
                 $validated['pincode']
@@ -97,7 +113,13 @@ class OrderController extends Controller
 
             return back()->with('success', 'Bestelling succesvol geannuleerd.');
         } catch (\Exception $e) {
-            return back()->with('error', $e->getMessage());
+            Log::error('Pharmacy API error in OrderController@cancel', [
+                'error' => $e->getMessage(),
+                'order_id' => $order->id,
+                'user_id' => auth()->id(),
+            ]);
+
+            return back()->with('error', 'Er ging iets mis bij het annuleren. Probeer het later opnieuw.');
         }
     }
 
@@ -111,7 +133,8 @@ class OrderController extends Controller
         }
 
         try {
-            $response = $this->pharmacyApi->getOrderStatus($order->order_id);
+            $pharmacyId = $order->pharmacy_id ?? config('services.pharmacy.pharmacy_id');
+            $response = $this->pharmacyApi->getOrderStatusForPharmacy($pharmacyId, $order->order_id);
 
             $order->update([
                 'status' => $response['status'] ?? $order->status,
@@ -120,7 +143,13 @@ class OrderController extends Controller
 
             return back()->with('success', 'Bestelstatus bijgewerkt.');
         } catch (\Exception $e) {
-            return back()->with('error', $e->getMessage());
+            Log::error('Pharmacy API error in OrderController@refresh', [
+                'error' => $e->getMessage(),
+                'order_id' => $order->id,
+                'user_id' => auth()->id(),
+            ]);
+
+            return back()->with('error', 'De apotheek is momenteel niet bereikbaar. Probeer het later opnieuw.');
         }
     }
 }

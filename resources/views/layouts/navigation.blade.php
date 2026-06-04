@@ -21,6 +21,9 @@
                     <x-nav-link :href="route('orders.index')" :active="request()->routeIs('orders.*')">
                         {{ __('Mijn Bestellingen') }}
                     </x-nav-link>
+                    <x-nav-link :href="route('external.index')" :active="request()->routeIs('external.*')">
+                        {{ __('Andere Apotheken') }}
+                    </x-nav-link>
                     @if(auth()->user()->isAdmin())
                         <x-nav-link :href="route('admin.customers.index')" :active="request()->routeIs('admin.*')">
                             {{ __('Klantenbeheer') }}
@@ -86,6 +89,9 @@
             </x-responsive-nav-link>
             <x-responsive-nav-link :href="route('orders.index')" :active="request()->routeIs('orders.*')">
                 {{ __('Mijn Bestellingen') }}
+            </x-responsive-nav-link>
+            <x-responsive-nav-link :href="route('external.index')" :active="request()->routeIs('external.*')">
+                {{ __('Andere Apotheken') }}
             </x-responsive-nav-link>
             @if(auth()->user()->isAdmin())
                 <x-responsive-nav-link :href="route('admin.customers.index')" :active="request()->routeIs('admin.*')">
