@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Order;
+use App\Models\Product;
 use App\Models\User;
 use App\Services\PharmacyApiService;
 use Illuminate\Http\Request;
@@ -14,9 +15,6 @@ class DashboardController extends Controller
         protected PharmacyApiService $pharmacyApi
     ) {}
 
-    /**
-     * Display the dashboard.
-     */
     public function __invoke(Request $request): View
     {
         $user = $request->user();
@@ -29,6 +27,7 @@ class DashboardController extends Controller
         if ($user->isAdmin()) {
             $data['customerCount'] = User::where('role', '!=', 'admin')->count();
             $data['orderCount'] = Order::count();
+            $data['productCount'] = Product::count();
 
             try {
                 $data['apiOnline'] = $this->pharmacyApi->isOnline();

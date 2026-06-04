@@ -4,6 +4,7 @@ use App\Http\Controllers\Api\PharmacyOrdersController;
 use App\Http\Controllers\Api\PharmacyProductsController;
 use App\Http\Controllers\Admin\CustomerController;
 use App\Http\Controllers\Admin\ProductController as AdminProductController;
+use App\Http\Controllers\Admin\OrderController as AdminOrderController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\ExternalOrderController;
 use App\Http\Controllers\ExternalPharmaciesController;
@@ -76,6 +77,9 @@ Route::middleware('auth')->group(function () {
         Route::get('/admin/products/{product}/edit', [AdminProductController::class, 'edit'])->name('admin.products.edit');
         Route::patch('/admin/products/{product}', [AdminProductController::class, 'update'])->name('admin.products.update');
         Route::delete('/admin/products/{product}', [AdminProductController::class, 'destroy'])->name('admin.products.destroy');
+
+        Route::get('/admin/orders', [AdminOrderController::class, 'index'])->name('admin.orders.index');
+        Route::get('/admin/orders/{order}', [AdminOrderController::class, 'show'])->name('admin.orders.show');
     });
 });
 

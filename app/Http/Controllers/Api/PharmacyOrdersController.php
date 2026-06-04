@@ -3,17 +3,14 @@
 namespace App\Http\Controllers\Api;
 
 use App\Models\Order;
+use App\Models\Product;
 use App\Http\Controllers\Controller;
-use App\Services\PharmacyApiService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 
 class PharmacyOrdersController extends Controller
 {
-    public function __construct(
-        protected PharmacyApiService $pharmacyApi
-    ) {}
 
     public function store(Request $request): JsonResponse
     {
@@ -193,11 +190,16 @@ class PharmacyOrdersController extends Controller
 
     protected function resolveProductName(string $productId): string
     {
-        try {
-            $product = $this->pharmacyApi->getProduct($productId);
-            return $product['name'] ?? "Product {$productId}";
-        } catch (\Exception) {
-            return "Product {$productId}";
+        $product = Product::where('uuid', $productId)->first();
+        if ($product) {
+            return $product->name;
         }
+
+        $product = Product::where('id', $productId)->first();
+        if ($product) {
+            return $product->name;
+        }
+
+        return "Product {$productId}";
     }
 }

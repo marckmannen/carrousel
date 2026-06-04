@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Product;
 use App\Services\PharmacyApiService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
@@ -29,9 +30,9 @@ class ProductsController extends Controller
      */
     public function show(string $productId): View
     {
-        try {
-            $product = $this->pharmacyApi->getProduct($productId);
-        } catch (\Exception $e) {
+        $product = Product::where('uuid', $productId)->first();
+
+        if (!$product) {
             return redirect()->route('products.index')
                 ->with('error', 'Product niet gevonden of niet meer beschikbaar.');
         }
@@ -61,12 +62,15 @@ class ProductsController extends Controller
      */
     protected function getProductsFromCache(): array
     {
-        try {
-            return Cache::remember('pharmacy.products', now()->addMinutes(15), function () {
-                return $this->pharmacyApi->getProducts();
-            });
-        } catch (\Exception) {
-            return [];
-        }
+        return Product::all()->map(function ($product) {
+            return [
+                'id' => $product->uuid,
+                'name' => $product->name,
+                'shortDescription' => $product->shortDescription,
+                'description' => $product->description,
+                'imageUrl' => $product->imageUrl,
+                'stock' => $product->stock,
+            ];
+        })->toArray();
     }
 }

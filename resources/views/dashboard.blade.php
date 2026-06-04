@@ -27,6 +27,12 @@
                         </div>
                     </div>
                     <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg p-6">
+                        <div class="text-sm font-medium text-gray-500 dark:text-gray-400">Totaal medicijnen</div>
+                        <div class="mt-2 text-3xl font-bold text-gray-900 dark:text-gray-100">
+                            {{ $productCount }}
+                        </div>
+                    </div>
+                    <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg p-6">
                         <div class="text-sm font-medium text-gray-500 dark:text-gray-400">Apotheek status</div>
                         <div class="mt-2">
                             @if($apiOnline)
@@ -45,12 +51,29 @@
                 <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg p-6">
                     <h3 class="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">Snelmenu</h3>
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <a href="{{ route('admin.customers.index') }}" class="flex items-center p-4 border border-gray-200 dark:border-gray-700 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition">
+                        <a href="{{ route('admin.customers.index') }}" class="flex items-center p-4 border border-transparent border-gray-200 dark:border-gray-700 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition">
                             <span class="text-2xl mr-3">👥</span>
                             <div>
                                 <div class="font-medium text-gray-900 dark:text-gray-100">Klanten beheren</div>
                                 <div class="text-sm text-gray-500">Nieuwe klanten toevoegen en bewerken</div>
                             </div>
+                        </a>
+                        <a href="{{ route('admin.products.index') }}" class="flex items-center p-4 border border-gray-200 dark:border-gray-700 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition">
+                            <span class="text-2xl mr-3">💊</span>
+                            <div>
+                                <div class="font-medium text-gray-900 dark:text-gray-100">Medicijnen beheren</div>
+                                <div class="text-sm text-gray-500">Medicijnen toevoegen, bewerken en bekijken</div>
+                            </div>
+                        </a>
+                        <a href="{{ route('admin.orders.index') }}" class="flex items-center p-4 border border-gray-200 dark:border-gray-700 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition">
+                            <span class="text-2xl mr-3">📦</span>
+                            <div>
+                                <div class="font-medium text-gray-900 dark:text-gray-100">Bestellingen bekijken</div>
+                                <div class="text-sm text-gray-500">Alle bestellingen in de apotheek</div>
+                            </div>
+                        </a>
+                    </div>
+                </div>
                         </a>
                         <a href="{{ route('products.index') }}" class="flex items-center p-4 border border-gray-200 dark:border-gray-700 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition">
                             <span class="text-2xl mr-3">💊</span>

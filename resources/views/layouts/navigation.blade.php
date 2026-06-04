@@ -25,9 +25,36 @@
                         {{ __('Andere Apotheken') }}
                     </x-nav-link>
                     @if(auth()->user()->isAdmin())
-                        <x-nav-link :href="route('admin.products.index')" :active="request()->routeIs('admin.products.*') || request()->routeIs('admin.customers.*')">
-                            {{ __('Beheer') }}
-                        </x-nav-link>
+                        <div class="relative" x-data="{ open: false }" @click.outside="open = false" @close.stop="open = false">
+                            <div @click="open = ! open" class="inline-flex items-center cursor-pointer h-full px-1 pt-1 text-sm font-medium leading-5 text-gray-900 dark:text-gray-100 transition duration-150 ease-in-out">
+                                {{ __('Beheer') }}
+                                <svg class="ml-1 h-4 w-4 fill-current" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" />
+                                </svg>
+                            </div>
+                            <div x-show="open"
+                                x-transition:enter="transition ease-out duration-200"
+                                x-transition:enter-start="opacity-0 scale-95"
+                                x-transition:enter-end="opacity-100 scale-100"
+                                x-transition:leave="transition ease-in duration-75"
+                                x-transition:leave-start="opacity-100 scale-100"
+                                x-transition:leave-end="opacity-0 scale-95"
+                                class="absolute z-50 mt-2 w-56 rounded-md shadow-lg ltr:origin-top-right rtl:origin-top-left end-0"
+                                style="display: none;"
+                                @click="open = false">
+                                <div class="rounded-md ring-1 ring-black ring-opacity-5 py-1 bg-white dark:bg-gray-700">
+                                    <a href="{{ route('admin.products.index') }}" class="block w-full px-4 py-2 text-start text-sm leading-5 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 focus:outline-none focus:bg-gray-100 dark:focus:bg-gray-800 transition duration-150 ease-in-out">
+                                            {{ __('Medicijnenbeheer') }}
+                                    </a>
+                                    <a href="{{ route('admin.orders.index') }}" class="block w-full px-4 py-2 text-start text-sm leading-5 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 focus:outline-none focus:bg-gray-100 dark:focus:bg-gray-800 transition duration-150 ease-in-out">
+                                            {{ __('Bestellingen') }}
+                                    </a>
+                                    <a href="{{ route('admin.customers.index') }}" class="block w-full px-4 py-2 text-start text-sm leading-5 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 focus:outline-none focus:bg-gray-100 dark:focus:bg-gray-800 transition duration-150 ease-in-out">
+                                            {{ __('Klantenbeheer') }}
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
                     @endif
                 </div>
             </div>
@@ -94,9 +121,26 @@
                 {{ __('Andere Apotheken') }}
             </x-responsive-nav-link>
             @if(auth()->user()->isAdmin())
-                <x-responsive-nav-link :href="route('admin.products.index')" :active="request()->routeIs('admin.products.*') || request()->routeIs('admin.customers.*')">
-                    {{ __('Beheer') }}
-                </x-responsive-nav-link>
+                <div x-data="{ open: false }" class="pt-1">
+                    <button @click="open = ! open" class="w-full flex justify-between items-center px-1 py-2 text-sm font-medium leading-5 text-gray-900 dark:text-gray-100 hover:text-gray-700 dark:hover:text-gray-300 transition duration-150 ease-in-out">
+                        {{ __('Beheer') }}
+                        <svg class="h-4 w-4 fill-current" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
+                            <path :class="{'hidden': open, 'inline-flex': ! open }" class="inline-flex" fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" />
+                            <path :class="{'hidden': ! open, 'inline-flex': open }" class="hidden" fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" />
+                        </svg>
+                    </button>
+                    <div :class="{'block': open, 'hidden': ! open}" class="hidden pl-3 pb-1 space-y-1">
+                            <x-responsive-nav-link :href="route('admin.products.index')" :active="request()->routeIs('admin.products.*')">
+                                    {{ __('Medicijnenbeheer') }}
+                            </x-responsive-nav-link>
+                            <x-responsive-nav-link :href="route('admin.orders.index')" :active="request()->routeIs('admin.orders.*')">
+                                    {{ __('Bestellingen') }}
+                            </x-responsive-nav-link>
+                            <x-responsive-nav-link :href="route('admin.customers.index')" :active="request()->routeIs('admin.customers.*')">
+                                    {{ __('Klantenbeheer') }}
+                            </x-responsive-nav-link>
+                    </div>
+                </div>
             @endif
         </div>
 

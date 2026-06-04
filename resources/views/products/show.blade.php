@@ -2,7 +2,7 @@
     <x-slot name="header">
         <div class="flex justify-between items-center">
             <h2 class="font-semibold text-xl text-gray-800 dark:text-gray-200 leading-tight">
-                {{ $product['name'] ?? 'Medicijn' }}
+                {{ $product->name ?? 'Medicijn' }}
             </h2>
             <a href="{{ route('products.index') }}"
                 class="text-sm text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100">
@@ -24,26 +24,26 @@
                 <div class="lg:col-span-2">
                     <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg p-6">
                         <h1 class="text-2xl font-bold text-gray-900 dark:text-gray-100">
-                            {{ $product['name'] ?? 'Medicijn' }}
+                            {{ $product->name ?? 'Medicijn' }}
                         </h1>
 
-                        @if(isset($product['shortDescription']))
-                            <p class="mt-2 text-gray-600 dark:text-gray-400">{{ $product['shortDescription'] }}</p>
+                        @if($product->shortDescription)
+                            <p class="mt-2 text-gray-600 dark:text-gray-400">{{ $product->shortDescription }}</p>
                         @endif
 
-                        @if(isset($product['description']))
+                        @if($product->description)
                             <div class="mt-4 prose dark:prose-invert max-w-none">
-                                {{ nl2br($product['description'], false) }}
+                                {{ nl2br($product->description, false) }}
                             </div>
                         @endif
 
-                        @if(isset($product['imageUrl']))
-                            <img src="{{ $product['imageUrl'] }}" alt="{{ $product['name'] }}" class="mt-6 rounded-lg max-w-full">
+                        @if($product->imageUrl)
+                            <img src="{{ $product->imageUrl }}" alt="{{ $product->name }}" class="mt-6 rounded-lg max-w-full object-contain">
                         @endif
 
                         <div class="mt-6 flex items-center gap-4">
                             <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200">
-                                ✓ Voorraad: {{ $product['stock'] ?? 'Niet beschikbaar' }}
+                                ✓ Voorraad: {{ $product->stock ?? 'Niet beschikbaar' }}
                             </span>
                         </div>
                     </div>
@@ -56,7 +56,7 @@
 
                         <form action="{{ route('orders.store') }}" method="POST" class="mt-4">
                             @csrf
-                            <input type="hidden" name="product_id" value="{{ $product['id'] }}">
+                            <input type="hidden" name="product_id" value="{{ $product->uuid }}">
 
                             <!-- Amount -->
                             <div>
