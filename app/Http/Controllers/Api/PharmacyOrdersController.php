@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api;
 
 use App\Models\Order;
 use App\Models\Product;
+use App\Models\User;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -30,12 +31,24 @@ class PharmacyOrdersController extends Controller
         ]);
 
         try {
+            $user = User::where('birthdate', $validated['birthdate'])->first();
+
+            if (!$user) {
+                $user = User::create([
+                    'name' => 'Klant ' . date('Y-m-d', strtotime($validated['birthdate'])),
+                    'email' => 'order-' . Str::random(20) . '@pharmacy.local',
+                    'password' => bcrypt(Str::random(32)),
+                    'role' => 'user',
+                    'birthdate' => $validated['birthdate'],
+                ]);
+            }
+
             $productName = $this->resolveProductName($validated['product_id']);
             $orderId = 'ord_' . Str::random(12);
             $pincode = sprintf('%04d', random_int(1000, 9999));
 
             $order = Order::create([
-                'user_id' => null,
+                'user_id' => $user->id,
                 'pharmacy_id' => config('services.pharmacy.pharmacy_id'),
                 'order_id' => $orderId,
                 'product_id' => $validated['product_id'],
