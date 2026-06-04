@@ -25,8 +25,8 @@
                         {{ __('Andere Apotheken') }}
                     </x-nav-link>
                     @if(auth()->user()->isAdmin())
-                        <x-nav-link :href="route('admin.customers.index')" :active="request()->routeIs('admin.*')">
-                            {{ __('Klantenbeheer') }}
+                        <x-nav-link :href="route('admin.products.index')" :active="request()->routeIs('admin.products.*') || request()->routeIs('admin.customers.*')">
+                            {{ __('Beheer') }}
                         </x-nav-link>
                     @endif
                 </div>
@@ -94,8 +94,8 @@
                 {{ __('Andere Apotheken') }}
             </x-responsive-nav-link>
             @if(auth()->user()->isAdmin())
-                <x-responsive-nav-link :href="route('admin.customers.index')" :active="request()->routeIs('admin.*')">
-                    {{ __('Klantenbeheer') }}
+                <x-responsive-nav-link :href="route('admin.products.index')" :active="request()->routeIs('admin.products.*') || request()->routeIs('admin.customers.*')">
+                    {{ __('Beheer') }}
                 </x-responsive-nav-link>
             @endif
         </div>

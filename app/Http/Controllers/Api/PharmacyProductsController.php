@@ -3,15 +3,11 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
-use App\Services\PharmacyApiService;
+use App\Models\Product;
 use Illuminate\Http\JsonResponse;
 
 class PharmacyProductsController extends Controller
 {
-    public function __construct(
-        protected PharmacyApiService $pharmacyApi
-    ) {}
-
     public function index(): JsonResponse
     {
         if (!$this->verifyAuth()) {
@@ -24,7 +20,14 @@ class PharmacyProductsController extends Controller
         }
 
         try {
-            $products = $this->pharmacyApi->getProducts();
+            $products = Product::all()->map(function ($product) {
+                return [
+                    'id' => $product->uuid,
+                    'name' => $product->name,
+                    'stock' => $product->stock,
+                ];
+            });
+
             return response()->json($products);
         } catch (\Exception $e) {
             \Illuminate\Support\Facades\Log::error('PharmacyProductsController@index error', ['error' => $e->getMessage()]);
@@ -49,9 +52,9 @@ class PharmacyProductsController extends Controller
         }
 
         try {
-            $product = $this->pharmacyApi->getProduct($productId);
+            $product = Product::where('uuid', $productId)->first();
 
-            if (!$product || !isset($product['id'])) {
+            if (!$product) {
                 return response()->json([
                     'error' => [
                         'code' => 'product_not_found',
@@ -61,7 +64,11 @@ class PharmacyProductsController extends Controller
                 ], 404);
             }
 
-            return response()->json($product);
+            return response()->json([
+                'id' => $product->uuid,
+                'name' => $product->name,
+                'stock' => $product->stock,
+            ]);
         } catch (\Exception $e) {
             \Illuminate\Support\Facades\Log::error('PharmacyProductsController@show error', ['error' => $e->getMessage(), 'productId' => $productId]);
             return response()->json([
