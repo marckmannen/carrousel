@@ -31,6 +31,28 @@ class PharmacyOrdersController extends Controller
         ]);
 
         try {
+            $product = Product::where('uuid', $validated['product_id'])->first();
+
+            if (!$product) {
+                return response()->json([
+                    'error' => [
+                        'code' => 'product_not_found',
+                        'message' => 'Product niet gevonden.',
+                        'details' => ['productId' => $validated['product_id']],
+                    ],
+                ], 404);
+            }
+
+            if ($product->stock < $validated['amount']) {
+                return response()->json([
+                    'error' => [
+                        'code' => 'insufficient_stock',
+                        'message' => 'Niet genoeg voorraad. Er zijn maar ' . $product->stock . ' ' . $product->name . ' op voorraad.',
+                        'details' => ['productId' => $validated['product_id'], 'available' => $product->stock],
+                    ],
+                ], 400);
+            }
+
             $user = User::where('birthdate', $validated['birthdate'])->first();
 
             if (!$user) {
@@ -43,7 +65,8 @@ class PharmacyOrdersController extends Controller
                 ]);
             }
 
-            $productName = $this->resolveProductName($validated['product_id']);
+            $product->decrement('stock', $validated['amount']);
+
             $orderId = 'ord_' . Str::random(12);
             $pincode = sprintf('%04d', random_int(1000, 9999));
 
@@ -52,7 +75,7 @@ class PharmacyOrdersController extends Controller
                 'pharmacy_id' => config('services.pharmacy.pharmacy_id'),
                 'order_id' => $orderId,
                 'product_id' => $validated['product_id'],
-                'product_name' => $productName,
+                'product_name' => $product->name,
                 'amount' => $validated['amount'],
                 'status' => 'pending',
                 'pincode' => $pincode,
@@ -166,6 +189,11 @@ class PharmacyOrdersController extends Controller
                         'details' => ['orderId' => $orderId],
                     ],
                 ], 400);
+            }
+
+            $product = Product::where('uuid', $order->product_id)->first();
+            if ($product) {
+                $product->increment('stock', $order->amount);
             }
 
             $order->update([
