@@ -72,6 +72,10 @@ class OrderController extends Controller
      */
     public function show(Order $order): View|RedirectResponse
     {
+        if (auth()->user()->isAdmin()) {
+            return view('orders.show', compact('order'));
+        }
+
         if ($order->user_id !== auth()->id()) {
             abort(403);
         }
@@ -84,7 +88,7 @@ class OrderController extends Controller
      */
     public function cancel(Request $request, Order $order): RedirectResponse
     {
-        if ($order->user_id !== auth()->id()) {
+        if (!auth()->user()->isAdmin() && $order->user_id !== auth()->id()) {
             abort(403);
         }
 
@@ -128,7 +132,7 @@ class OrderController extends Controller
      */
     public function refresh(Order $order): RedirectResponse
     {
-        if ($order->user_id !== auth()->id()) {
+        if (!auth()->user()->isAdmin() && $order->user_id !== auth()->id()) {
             abort(403);
         }
 

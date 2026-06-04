@@ -26,7 +26,7 @@ class DashboardController extends Controller
 
         if ($user->isAdmin()) {
             $data['customerCount'] = User::where('role', '!=', 'admin')->count();
-            $data['orderCount'] = Order::count();
+            $data['orderCount'] = Order::whereIn('status', ['pending', 'ready'])->count();
             $data['productCount'] = Product::count();
 
             try {
