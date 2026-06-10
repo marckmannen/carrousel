@@ -70,7 +70,7 @@
                             <dt class="text-sm font-medium text-gray-500 dark:text-gray-400">Pincode</dt>
                             <dd class="mt-1 flex items-center gap-2">
                                 <span class="text-sm font-mono font-bold text-gray-900 dark:text-gray-100 text-lg" x-show="show">{{ $order->pincode }}</span>
-                                <span class="text-sm font-mono font-bold text-gray-900 dark:text-gray-100 text-lg" x-show="!show">{{ str_repeat('*', strlen('{{ $order->pincode }}')) }}</span>
+                                <span class="text-sm font-mono font-bold text-gray-900 dark:text-gray-100 text-lg" x-show="!show">****</span>
                                 <button type="button" @click="show = !show" class="text-xs text-indigo-600 hover:text-indigo-900 dark:text-indigo-400 dark:hover:text-indigo-300">
                                     <span x-text="show ? 'Verbergen' : 'Tonen'"></span>
                                 </button>
@@ -107,7 +107,7 @@
                         Bestelling annuleren
                     </h3>
                     <p class="mt-2 text-sm text-gray-500">
-                        Vul je geboortedatum en pincode in om de bestelling te annuleren.
+                        Vul je geboortedatum of pincode in om de bestelling te annuleren.
                     </p>
                     <form action="{{ route('orders.cancel', $order) }}" method="POST" class="mt-4">
                         @csrf
@@ -115,15 +115,16 @@
                             <label for="birthdate" class="block text-sm font-medium text-gray-700 dark:text-gray-300">
                                 Geboortedatum
                             </label>
-                            <input type="date" name="birthdate" id="birthdate" required
-                                value="{{ $order->birthdate }}"
+                            <input type="date" name="birthdate" id="birthdate"
+                                value="{{ old('birthdate', $order->birthdate) }}"
                                 class="mt-1 block w-full rounded-md border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 text-sm">
                         </div>
                         <div class="mt-4">
                             <label for="pincode" class="block text-sm font-medium text-gray-700 dark:text-gray-300">
                                 Pincode
                             </label>
-                            <input type="password" name="pincode" id="pincode" required minlength="4" maxlength="10"
+                            <input type="password" name="pincode" id="pincode" minlength="4" maxlength="10"
+                                placeholder="1234"
                                 class="mt-1 block w-32 rounded-md border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 text-sm">
                         </div>
                         <div class="mt-6 flex justify-end gap-3">

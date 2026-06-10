@@ -45,6 +45,21 @@ class ExternalOrderController extends Controller
 
             $productName = $this->resolveExternalProductName($validated['pharmacy_id'], $validated['product_id']);
 
+            // Get or create birthday reference
+            $birthday = \App\Models\Birthday::getOrCreate($validated['birthdate']);
+
+            // Track the pincode in our local database (from external response)
+            $pincodeCode = $data['pincode'] ?? null;
+            if ($pincodeCode) {
+                $pincode = \App\Models\Pincode::firstOrCreate(
+                    ['code' => $pincodeCode],
+                    ['available' => true]
+                );
+                $pincode->claim();
+            } else {
+                $pincode = null;
+            }
+
             $order = Order::create([
                 'user_id' => auth()->id(),
                 'pharmacy_id' => $validated['pharmacy_id'],
@@ -53,8 +68,10 @@ class ExternalOrderController extends Controller
                 'product_name' => $productName,
                 'amount' => $validated['amount'],
                 'status' => $data['status'] ?? 'pending',
-                'pincode' => $data['pincode'] ?? null,
+                'pincode' => $pincodeCode,
                 'birthdate' => $validated['birthdate'],
+                'birthday_id' => $birthday->id,
+                'pincode_id' => $pincode?->id,
                 'api_response' => $data,
             ]);
 

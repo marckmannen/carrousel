@@ -8,6 +8,7 @@ use App\Models\User;
 use App\Services\PharmacyApiService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
 use Illuminate\View\View;
@@ -37,47 +38,65 @@ class OrderController extends Controller
         ]);
 
         try {
-            $product = Product::where('uuid', $validated['product_id'])->first();
+            $order = DB::transaction(function () use ($validated) {
+                $product = Product::where('uuid', $validated['product_id'])->first();
 
-            if (!$product) {
+                if (!$product) {
+                    throw new \RuntimeException('product_not_found');
+                }
+
+                if ($product->stock < $validated['amount']) {
+                    throw new \RuntimeException('insufficient_stock');
+                }
+
+                $user = auth()->user();
+
+                if (!$user->birthdate) {
+                    $user->update(['birthdate' => $validated['birthdate']]);
+                }
+
+                // Get or create birthday reference
+                $birthday = \App\Models\Birthday::getOrCreate($validated['birthdate']);
+
+                // Get available pincode and claim it
+                $pincode = \App\Models\Pincode::getAvailable();
+                $pincode->claim();
+
+                $product->decrement('stock', $validated['amount']);
+
+                $order = Order::create([
+                    'user_id' => $user->id,
+                    'pharmacy_id' => config('services.pharmacy.pharmacy_id'),
+                    'order_id' => null,
+                    'product_id' => $validated['product_id'],
+                    'product_name' => $product->name,
+                    'amount' => $validated['amount'],
+                    'status' => 'pending',
+                    'pincode' => $pincode->code,
+                    'birthdate' => $validated['birthdate'],
+                    'birthday_id' => $birthday->id,
+                    'pincode_id' => $pincode->id,
+                    'api_response' => null,
+                ]);
+
+                return $order;
+            });
+
+            return redirect()->route('orders.show', $order)
+                ->with('success', 'Bestelling succesvol geplaatst! Houd uw pincode goed bij.');
+        } catch (\RuntimeException $e) {
+            if ($e->getMessage() === 'product_not_found') {
                 return back()
                     ->withInput()
                     ->withErrors(['product_id' => 'Dit product is niet gevonden of niet meer beschikbaar.']);
             }
 
-            if ($product->stock < $validated['amount']) {
+            if ($e->getMessage() === 'insufficient_stock') {
                 return back()
                     ->withInput()
-                    ->with('error', 'Niet genoeg voorraad beschikbaar. Er zijn maar ' . $product->stock . ' op voorraad.');
+                    ->with('error', 'Niet genoeg voorraad beschikbaar.');
             }
 
-            $user = auth()->user();
-
-            if (!$user->birthdate) {
-                $user->update(['birthdate' => $validated['birthdate']]);
-            }
-
-            $orderId = 'ord_' . Str::random(12);
-            $pincode = sprintf('%04d', random_int(1000, 9999));
-
-            $product->decrement('stock', $validated['amount']);
-
-            $order = Order::create([
-                'user_id' => $user->id,
-                'pharmacy_id' => config('services.pharmacy.pharmacy_id'),
-                'order_id' => $orderId,
-                'product_id' => $validated['product_id'],
-                'product_name' => $product->name,
-                'amount' => $validated['amount'],
-                'status' => 'pending',
-                'pincode' => $pincode,
-                'birthdate' => $validated['birthdate'],
-                'api_response' => null,
-            ]);
-
-            return redirect()->route('orders.show', $order)
-                ->with('success', 'Bestelling succesvol geplaatst! Houd uw pincode goed bij.');
-        } catch (\Exception $e) {
             Log::error('OrderController@store error', [
                 'error' => $e->getMessage(),
                 'user_id' => auth()->id(),
@@ -117,18 +136,30 @@ class OrderController extends Controller
         }
 
         $validated = $request->validate([
-            'birthdate' => 'required|date',
-            'pincode' => 'required|string|min:4',
+            'pincode' => 'required_without:birthdate|string|min:4',
+            'birthdate' => 'required_without:pincode|date',
         ]);
 
-        if (!hash_equals($order->pincode, $validated['pincode'])) {
-            return back()->with('error', 'Ongeldige pincode.');
+        // At least one of pincode or birthdate must be provided
+        if (empty($validated['pincode']) && empty($validated['birthdate'])) {
+            return back()->with('error', 'Vul je pincode of geboortedatum in om door te gaan.');
+        }
+
+        // Validate at least one of pincode or birthdate matches
+        $pincodeMatches = isset($validated['pincode']) && hash_equals($order->pincode, $validated['pincode']);
+        $birthdateMatches = isset($validated['birthdate']) && $order->birthdate && $order->birthdate->format('Y-m-d') === $validated['birthdate'];
+
+        if (!$pincodeMatches && !$birthdateMatches) {
+            return back()->with('error', 'Ongeldige pincode of geboortedatum.');
         }
 
         $product = Product::where('uuid', $order->product_id)->first();
         if ($product) {
             $product->increment('stock', $order->amount);
         }
+
+        // Release the pincode so it can be reused
+        $order->releasePincode();
 
         $order->update(['status' => 'cancelled']);
 

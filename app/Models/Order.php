@@ -10,6 +10,22 @@ class Order extends Model
 {
     use HasFactory;
 
+    protected static function booted(): void
+    {
+        static::creating(function ($order) {
+            // If order_id is not set, we'll assign it after the insert
+            // using the database-generated id
+        });
+
+        static::created(function ($order) {
+            // Set order_id to the database record id if not already set externally
+            if (empty($order->order_id)) {
+                $order->order_id = (string) $order->id;
+                $order->saveQuietly();
+            }
+        });
+    }
+
     protected $fillable = [
         'user_id',
         'pharmacy_id',
@@ -20,6 +36,8 @@ class Order extends Model
         'status',
         'pincode',
         'birthdate',
+        'birthday_id',
+        'pincode_id',
         'api_response',
     ];
 
@@ -34,5 +52,26 @@ class Order extends Model
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
+    }
+
+    public function birthday(): BelongsTo
+    {
+        return $this->belongsTo(Birthday::class);
+    }
+
+    public function pincodeRecord(): BelongsTo
+    {
+        return $this->belongsTo(Pincode::class, 'pincode_id');
+    }
+
+    /**
+     * Release the associated pincode so it can be reused.
+     * Called when an order is cancelled or picked up.
+     */
+    public function releasePincode(): void
+    {
+        if ($this->pincodeRecord) {
+            $this->pincodeRecord->release();
+        }
     }
 }
