@@ -116,7 +116,7 @@
                                 Geboortedatum
                             </label>
                             <input type="date" name="birthdate" id="birthdate"
-                                value="{{ old('birthdate', $order->birthdate) }}"
+                                value="{{ old('birthdate', $order->birthdate ? $order->birthdate->format('Y-m-d') : '') }}"
                                 class="mt-1 block w-full rounded-md border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 text-sm">
                         </div>
                         <div class="mt-4">
