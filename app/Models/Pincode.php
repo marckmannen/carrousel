@@ -24,7 +24,7 @@ class Pincode extends Model
         $pincode = static::where('available', true)->inRandomOrder()->first();
 
         if (!$pincode) {
-            // Generate a unique pincode that doesn't exist yet
+            // generate a unique pincode that doesn't exist yet
             do {
                 $code = sprintf('%04d', random_int(1000, 9999));
             } while (static::where('code', $code)->exists());

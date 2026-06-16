@@ -9,7 +9,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('orders', function (Blueprint $table) {
-            // Add foreign keys to new tables
+            // add foreign keys to new tables
             $table->foreignId('birthday_id')->nullable()->after('birthdate')->constrained('birthdates')->nullOnDelete();
             $table->foreignId('pincode_id')->nullable()->after('pincode')->constrained('pincodes')->nullOnDelete();
         });

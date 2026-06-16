@@ -13,12 +13,11 @@ class Order extends Model
     protected static function booted(): void
     {
         static::creating(function ($order) {
-            // If order_id is not set, we'll assign it after the insert
-            // using the database-generated id
+            //
         });
 
         static::created(function ($order) {
-            // Set order_id to the database record id if not already set externally
+            //
             if (empty($order->order_id)) {
                 $order->order_id = (string) $order->id;
                 $order->saveQuietly();

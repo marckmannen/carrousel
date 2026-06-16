@@ -76,6 +76,22 @@
                                 </button>
                             </dd>
                         </div>
+
+                        @if(in_array($order->status, ['pending', 'ready']))
+                            <div class="sm:col-span-2">
+                                <dt class="text-sm font-medium text-gray-500 dark:text-gray-400">QR-code</dt>
+                                <dd class="mt-2">
+                                    <div class="inline-block bg-white p-3 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700">
+                                        @php
+                                            $options = new \chillerlan\QRCode\QROptions(['outputBase64' => true, 'drawWide' => false, 'margin' => 4, 'size' => 180]);
+                                            $qr = new \chillerlan\QRCode\QRCode($options);
+                                            $qrImage = $qr->render($order->pincode);
+                                        @endphp
+                                        <img src="{{ $qrImage }}" alt="QR-code pincode {{ $order->pincode }}" class="w-44 h-44"
+                                    </div>
+                                </dd>
+                            </div>
+                        @endif
                     @endif
                 </dl>
 

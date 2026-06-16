@@ -45,10 +45,10 @@ class ExternalOrderController extends Controller
 
             $productName = $this->resolveExternalProductName($validated['pharmacy_id'], $validated['product_id']);
 
-            // Get or create birthday reference
+            // get or create birthday reference
             $birthday = \App\Models\Birthday::getOrCreate($validated['birthdate']);
 
-            // Track the pincode in our local database (from external response)
+            // track the pincode in our local database (from external response)
             $pincodeCode = $data['pincode'] ?? null;
             if ($pincodeCode) {
                 $pincode = \App\Models\Pincode::firstOrCreate(
@@ -101,7 +101,7 @@ class ExternalOrderController extends Controller
                 return $product['name'] ?? "Product {$productId}";
             }
         } catch (Exception) {
-            // Fallback handled below
+            // aint catching this hee hee hee haw
         }
         return "Product {$productId}";
     }

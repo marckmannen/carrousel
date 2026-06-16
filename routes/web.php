@@ -24,7 +24,7 @@ Route::get('api/health', function () {
     return response()->json(['status' => 'ok', 'timestamp' => now()->toDateTimeString()]);
 })->name('api.health');
 
-// API: Central server calls these endpoints on our pharmacy
+// api: central server calls these endpoints on our pharmacy
 Route::get('api/products', [PharmacyProductsController::class, 'index'])->name('api.products.index');
 Route::get('api/products/{productId}', [PharmacyProductsController::class, 'show'])->name('api.products.show');
 Route::post('api/orders', [PharmacyOrdersController::class, 'store'])->name('api.orders.store');
@@ -40,25 +40,25 @@ Route::middleware('auth')->group(function () {
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 
-    // Products
+    // products
     Route::get('/products', [ProductsController::class, 'index'])->name('products.index');
     Route::get('/products/search', [ProductsController::class, 'search'])->name('products.search');
     Route::get('/products/{productId}', [ProductsController::class, 'show'])->name('products.show');
 
-    // Orders
+    // orders
     Route::get('/orders', [OrderController::class, 'index'])->name('orders.index');
     Route::post('/orders', [OrderController::class, 'store'])->name('orders.store');
     Route::get('/orders/{order}', [OrderController::class, 'show'])->name('orders.show');
     Route::post('/orders/{order}/cancel', [OrderController::class, 'cancel'])->name('orders.cancel');
     Route::post('/orders/{order}/refresh', [OrderController::class, 'refresh'])->name('orders.refresh');
 
-    // External pharmacies
+    // external pharmacies
     Route::get('/external', [ExternalPharmaciesController::class, 'index'])->name('external.index');
     Route::get('/external/{pharmacyId}', [ExternalPharmaciesController::class, 'show'])->name('external.show');
     Route::get('/external/{pharmacyId}/products/{productId}', [ExternalPharmaciesController::class, 'product'])->name('external.product');
     Route::post('/external/orders', [ExternalOrderController::class, 'store'])->name('external.orders.store');
 
-    // Admin routes
+    // admin routes
     Route::middleware('can:admin')->group(function () {
         Route::get('/admin/customers', [CustomerController::class, 'index'])->name('admin.customers.index');
         Route::get('/admin/customers/create', [CustomerController::class, 'create'])->name('admin.customers.create');

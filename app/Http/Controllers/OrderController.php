@@ -55,10 +55,10 @@ class OrderController extends Controller
                     $user->update(['birthdate' => $validated['birthdate']]);
                 }
 
-                // Get or create birthday reference
+                // get or create birthday reference
                 $birthday = \App\Models\Birthday::getOrCreate($validated['birthdate']);
 
-                // Get available pincode and claim it
+                // get available pincode and claim it
                 $pincode = \App\Models\Pincode::getAvailable();
                 $pincode->claim();
 
@@ -140,12 +140,12 @@ class OrderController extends Controller
             'birthdate' => 'required_without:pincode|date',
         ]);
 
-        // At least one of pincode or birthdate must be provided
+        // at least one of pincode or birthdate must be provided
         if (empty($validated['pincode']) && empty($validated['birthdate'])) {
             return back()->with('error', 'Vul je pincode of geboortedatum in om door te gaan.');
         }
 
-        // Validate at least one of pincode or birthdate matches
+        // validate at least one of pincode or birthdate matches
         $pincodeMatches = isset($validated['pincode']) && hash_equals($order->pincode, $validated['pincode']);
         $birthdateMatches = isset($validated['birthdate']) && $order->birthdate && $order->birthdate->format('Y-m-d') === $validated['birthdate'];
 
@@ -158,7 +158,7 @@ class OrderController extends Controller
             $product->increment('stock', $order->amount);
         }
 
-        // Release the pincode so it can be reused
+        // release the pincode so it can be reused
         $order->releasePincode();
 
         $order->update(['status' => 'cancelled']);
