@@ -45,14 +45,14 @@
                             </div>
                         </a>
                         <a href="{{ route('admin.products.index') }}" class="flex items-center p-4 border border-gray-200 dark:border-gray-700 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition">
-                            <span class="text-2xl mr-3">💊</span>
+                            <span class="text-2xl mr-3"></span>
                             <div>
                                 <div class="font-medium text-gray-900 dark:text-gray-100">Medicijnen beheren</div>
                                 <div class="text-sm text-gray-500">Medicijnen toevoegen, bewerken en bekijken</div>
                             </div>
                         </a>
                         <a href="{{ route('admin.orders.index') }}" class="flex items-center p-4 border border-gray-200 dark:border-gray-700 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition">
-                            <span class="text-2xl mr-3">📦</span>
+                            <span class="text-2xl mr-3"></span>
                             <div>
                                 <div class="font-medium text-gray-900 dark:text-gray-100">Bestellingen bekijken</div>
                                 <div class="text-sm text-gray-500">Alle bestellingen in de apotheek</div>
@@ -62,7 +62,7 @@
                 </div>
                         </a>
                         <a href="{{ route('products.index') }}" class="flex items-center p-4 border border-gray-200 dark:border-gray-700 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition">
-                            <span class="text-2xl mr-3">💊</span>
+                            <span class="text-2xl mr-3"></span>
                             <div>
                                 <div class="font-medium text-gray-900 dark:text-gray-100">Medicijnen bekijken</div>
                                 <div class="text-sm text-gray-500">Alle beschikbare medicijnen uit de apotheek</div>
@@ -77,14 +77,14 @@
                         <h3 class="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">Snelmenu</h3>
                         <div class="space-y-3">
                             <a href="{{ route('products.index') }}" class="flex items-center p-3 border border-gray-200 dark:border-gray-700 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition">
-                                <span class="text-xl mr-3">💊</span>
+                                <span class="text-xl mr-3"></span>
                                 <div>
                                     <div class="font-medium text-gray-900 dark:text-gray-100">Medicijnen bekijken</div>
                                     <div class="text-sm text-gray-500">Bekijk en bestel beschikbare medicijnen</div>
                                 </div>
                             </a>
                             <a href="{{ route('orders.index') }}" class="flex items-center p-3 border border-gray-200 dark:border-gray-700 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition">
-                                <span class="text-xl mr-3">📦</span>
+                                <span class="text-xl mr-3"></span>
                                 <div>
                                     <div class="font-medium text-gray-900 dark:text-gray-100">Mijn bestellingen</div>
                                     <div class="text-sm text-gray-500">Bekijk de status van je bestellingen</div>
