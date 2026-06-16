@@ -32,20 +32,6 @@
                             {{ $productCount }}
                         </div>
                     </div>
-                    <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg p-6">
-                        <div class="text-sm font-medium text-gray-500 dark:text-gray-400">Apotheek status</div>
-                        <div class="mt-2">
-                            @if($apiOnline)
-                                <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200">
-                                    ✓ Online
-                                </span>
-                            @else
-                                <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200">
-                                    ✗ Offline
-                                </span>
-                            @endif
-                        </div>
-                    </div>
                 </div>
 
                 <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg p-6">

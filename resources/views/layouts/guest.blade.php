@@ -18,7 +18,9 @@
         <div class="min-h-screen flex flex-col sm:justify-center items-center pt-6 sm:pt-0 bg-gray-100 dark:bg-gray-900">
             <div>
                 <a href="/">
-                    <x-application-logo class="w-20 h-20 fill-current text-gray-500" />
+                    <img src="/images/logo.png" alt="Logo"
+                        class="w-[400px] h-[400px] object-contain"
+                        style="mask-image: radial-gradient(ellipse at center, black 35%, transparent 70%); -webkit-mask-image: radial-gradient(ellipse at center, black 35%, transparent 70%);" />
                 </a>
             </div>
 

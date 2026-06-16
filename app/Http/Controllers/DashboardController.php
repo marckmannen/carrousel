@@ -28,12 +28,6 @@ class DashboardController extends Controller
             $data['customerCount'] = User::where('role', '!=', 'admin')->count();
             $data['orderCount'] = Order::whereIn('status', ['pending', 'ready'])->count();
             $data['productCount'] = Product::count();
-
-            try {
-                $data['apiOnline'] = $this->pharmacyApi->isOnline();
-            } catch (\Throwable) {
-                $data['apiOnline'] = false;
-            }
         } else {
             $data['recentOrders'] = $user->orders()->latest()->limit(5)->get();
         }
