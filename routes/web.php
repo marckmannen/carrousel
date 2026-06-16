@@ -30,7 +30,6 @@ Route::get('api/products/{productId}', [PharmacyProductsController::class, 'show
 Route::post('api/orders', [PharmacyOrdersController::class, 'store'])->name('api.orders.store');
 Route::get('api/orders/{orderId}', [PharmacyOrdersController::class, 'show'])->name('api.orders.show');
 Route::post('api/orders/{orderId}/cancel', [PharmacyOrdersController::class, 'cancel'])->name('api.orders.cancel');
-Route::post('api/orders/{orderId}/compartment', [PharmacyOrdersController::class, 'assignCompartment'])->name('api.orders.compartment');
 Route::post('api/orders/{orderId}/complete', [PharmacyOrdersController::class, 'complete'])->name('api.orders.complete');
 
 Route::middleware(['auth', 'verified'])->group(function () {

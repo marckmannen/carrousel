@@ -74,16 +74,4 @@ class Order extends Model
             $this->pincodeRecord->release();
         }
     }
-
-    /**
-     * Assign a compartment (1-4) and set status to ready.
-     */
-    public function assignCompartment(int $number): bool
-    {
-        $number = max(1, min(4, $number));
-        return $this->update([
-            'compartment_number' => $number,
-            'status' => 'ready',
-        ]);
-    }
 }
