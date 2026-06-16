@@ -27,12 +27,14 @@
                                 'ready' => 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200',
                                 'cancelled' => 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200',
                                 'rejected' => 'bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-300',
+                                'completed' => 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200',
                             ];
                             $statusLabels = [
                                 'pending' => 'In afwachting',
                                 'ready' => 'Klaar',
                                 'cancelled' => 'Geannuleerd',
                                 'rejected' => 'Afgekeurd',
+                                'completed' => 'Afgerond',
                             ];
                         @endphp
                         <span class="px-3 py-1 text-sm font-semibold rounded-full
@@ -68,6 +70,15 @@
                             <dt class="text-sm font-medium text-gray-500 dark:text-gray-400">Pincode</dt>
                             <dd class="mt-1 text-sm font-mono font-bold text-gray-900 dark:text-gray-100">{{ $order->pincode }}</dd>
                         </div>
+
+                        @if($order->compartment_number || in_array($order->status, ['ready', 'completed']))
+                            <div>
+                                <dt class="text-sm font-medium text-gray-500 dark:text-gray-400">Vakje</dt>
+                                <dd class="mt-1 text-2xl font-bold text-gray-900 dark:text-gray-100">
+                                    {{ $order->compartment_number ?? '-' }}
+                                </dd>
+                            </div>
+                        @endif
 
                         @if(in_array($order->status, ['pending', 'ready']))
                             <div class="sm:col-span-2">

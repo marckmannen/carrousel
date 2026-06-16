@@ -38,6 +38,7 @@ class Order extends Model
         'birthday_id',
         'pincode_id',
         'api_response',
+        'compartment_number',
     ];
 
     protected function casts(): array
@@ -72,5 +73,17 @@ class Order extends Model
         if ($this->pincodeRecord) {
             $this->pincodeRecord->release();
         }
+    }
+
+    /**
+     * Assign a compartment (1-4) and set status to ready.
+     */
+    public function assignCompartment(int $number): bool
+    {
+        $number = max(1, min(4, $number));
+        return $this->update([
+            'compartment_number' => $number,
+            'status' => 'ready',
+        ]);
     }
 }

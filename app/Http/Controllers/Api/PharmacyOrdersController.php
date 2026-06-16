@@ -253,6 +253,106 @@ class PharmacyOrdersController extends Controller
         }
     }
 
+    /**
+     * assign a compartment (1-4) for an order — used by the medicine locker app.
+     */
+    public function assignCompartment(Request $request, string $orderId): JsonResponse
+    {
+        if (!$this->verifyAuth()) {
+            return response()->json([
+                'error' => [
+                    'code' => 'unauthorized',
+                    'message' => 'Ongeldige of ontbrekende autorisatie.',
+                ],
+            ], 401);
+        }
+
+        $validated = $request->validate([
+            'compartment' => 'required|integer|min:1|max:4',
+        ]);
+
+        $order = Order::where('order_id', $orderId)->first();
+
+        if (!$order) {
+            return response()->json([
+                'error' => [
+                    'code' => 'order_not_found',
+                    'message' => 'Bestelling niet gevonden.',
+                    'details' => ['orderId' => $orderId],
+                ],
+            ], 404);
+        }
+
+        if ($order->status !== 'pending') {
+            return response()->json([
+                'error' => [
+                    'code' => 'order_not_pending',
+                    'message' => 'Deze bestelling kan niet meer aan een vakje worden toegewezen.',
+                    'details' => ['orderId' => $orderId, 'status' => $order->status],
+                ],
+            ], 400);
+        }
+
+        $order->assignCompartment($validated['compartment']);
+
+        return response()->json([
+            'order_id' => $order->order_id,
+            'status' => $order->status,
+            'compartment_number' => $order->compartment_number,
+        ]);
+    }
+
+    /**
+     * mark an order as completed — used by the medicine locker app after pickup.
+     */
+    public function complete(string $orderId): JsonResponse
+    {
+        if (!$this->verifyAuth()) {
+            return response()->json([
+                'error' => [
+                    'code' => 'unauthorized',
+                    'message' => 'Ongeldige of ontbrekende autorisatie.',
+                ],
+            ], 401);
+        }
+
+        $order = Order::where('order_id', $orderId)->first();
+
+        if (!$order) {
+            return response()->json([
+                'error' => [
+                    'code' => 'order_not_found',
+                    'message' => 'Bestelling niet gevonden.',
+                    'details' => ['orderId' => $orderId],
+                ],
+            ], 404);
+        }
+
+        if ($order->status !== 'ready') {
+            return response()->json([
+                'error' => [
+                    'code' => 'order_not_ready',
+                    'message' => 'Alleen orders die klaar zijn kunnen als afgerond worden gemarkeerd.',
+                    'details' => ['orderId' => $orderId, 'status' => $order->status],
+                ],
+            ], 400);
+        }
+
+        // release the pincode so it can be reused
+        $order->releasePincode();
+
+        // free up the compartment
+        $order->update([
+            'status' => 'completed',
+            'compartment_number' => null,
+        ]);
+
+        return response()->json([
+            'order_id' => $order->order_id,
+            'status' => $order->status,
+        ]);
+    }
+
     protected function verifyAuth(): bool
     {
         $secret = config('services.pharmacy.secret_key') ?? env('PHARMACY_SECRET_KEY');
