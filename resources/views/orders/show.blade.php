@@ -102,7 +102,6 @@
                                 </dd>
                             </div>
                         @endif
-                    @endif
                 </dl>
 
                 <!-- Actions -->
