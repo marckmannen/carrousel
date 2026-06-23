@@ -86,8 +86,36 @@ class ExternalPharmaciesController extends Controller
                 return [];
             }
             $data = $response->json();
+            $ourPharmacyId = config('services.pharmacy.pharmacy_id');
+            $excludedCodes = ['5306']; // dubbele Carrousel-apotheek (niet in gebruik)
 
-            return collect($data)->filter(fn($item) => $item['online'] ?? false)->values()->all();
+            $pharmacyList = collect($data)->map(fn($i) => sprintf("%s (%s)", $i['pharmacy']['name'] ?? 'unknown', $i['pharmacy']['id'] ?? 'N/A'))->join(', ');
+
+            Log::info('Pharmacy filter status', [
+                'ourPharmacyId' => $ourPharmacyId,
+                'availablePharmacies' => $pharmacyList,
+            ]);
+
+            return collect($data)
+                ->filter(function ($item) use ($ourPharmacyId, $excludedCodes) {
+                    $theirId = (string) ($item['pharmacy']['id'] ?? '');
+                    $theirCode = (string) ($item['pharmacy']['pharmacyCode'] ?? '');
+                    $isOnline = $item['pharmacy']['online'] ?? $item['online'] ?? false;
+
+                    if (!$isOnline) {
+                        return false;
+                    }
+                    if ($ourPharmacyId && $theirId === (string) $ourPharmacyId) {
+                        return false;
+                    }
+                    if (in_array($theirCode, $excludedCodes)) {
+                        return false;
+                    }
+
+                    return true;
+                })
+                ->values()
+                ->all();
         } catch (Exception $e) {
             Log::error('Failed to fetch external pharmacies', ['error' => $e->getMessage()]);
             return [];
