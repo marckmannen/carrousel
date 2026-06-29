@@ -20,27 +20,49 @@
                         </h3>
                         <p class="text-sm text-gray-500">Besteld op {{ $order->created_at->locale('nl')->isoFormat('DD-MM-YYYY HH:mm') }}</p>
                     </div>
-                    <div>
-                        @php
-                            $statusClasses = [
-                                'pending' => 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200',
-                                'ready' => 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200',
-                                'cancelled' => 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200',
-                                'rejected' => 'bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-300',
-                                'completed' => 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200',
-                            ];
-                            $statusLabels = [
-                                'pending' => 'In afwachting',
-                                'ready' => 'Klaar',
-                                'cancelled' => 'Geannuleerd',
-                                'rejected' => 'Afgekeurd',
-                                'completed' => 'Afgerond',
-                            ];
-                        @endphp
-                        <span class="px-3 py-1 text-sm font-semibold rounded-full
-                            {{ $statusClasses[$order->status] ?? $statusClasses['pending'] }}">
-                            {{ $statusLabels[$order->status] ?? $order->status }}
-                        </span>
+
+                    @php
+                        $statusClasses = [
+                            'pending' => 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200',
+                            'ready' => 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200',
+                            'cancelled' => 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200',
+                            'rejected' => 'bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-300',
+                            'completed' => 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200',
+                        ];
+                        $statusLabels = [
+                            'pending' => 'In afwachting',
+                            'ready' => 'Klaar',
+                            'cancelled' => 'Geannuleerd',
+                            'rejected' => 'Afgekeurd',
+                            'completed' => 'Afgerond',
+                        ];
+                    @endphp
+
+                    <!-- Status Selector -->
+                    <div x-data="{ status: '{{ $order->status }}' }">
+                        <form action="{{ route('admin.orders.updateStatus', $order) }}" @submit.prevent="
+                            const params = new URLSearchParams();
+                            params.set('status', status);
+                            params.set('_method', 'PATCH');
+                            params.set('_token', '{{ csrf_token() }}');
+                            fetch(action, {
+                                method: 'POST',
+                                headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+                                body: params
+                            }).then(r => {
+                                if (r.ok) location.reload();
+                            });
+                        ">
+                            <select x-model="status" name="status" @change="$el.form.requestSubmit()"
+                                class="pl-3 pr-10 py-1.5 text-sm font-semibold rounded-full border-0 cursor-pointer focus:outline-none focus:ring-2 focus:ring-indigo-500
+                                {{ $statusClasses[$order->status] ?? $statusClasses['pending'] }}">
+                                <option value="pending" {{ $order->status === 'pending' ? 'selected' : '' }}>In afwachting</option>
+                                <option value="ready" {{ $order->status === 'ready' ? 'selected' : '' }}>Klaar voor ophalen</option>
+                                <option value="completed" {{ $order->status === 'completed' ? 'selected' : '' }}>Afgerond</option>
+                                <option value="cancelled" {{ $order->status === 'cancelled' ? 'selected' : '' }}>Geannuleerd</option>
+                                <option value="rejected" {{ $order->status === 'rejected' ? 'selected' : '' }}>Afgekeurd</option>
+                            </select>
+                        </form>
                     </div>
                 </div>
 
