@@ -40,20 +40,10 @@
 
                     <!-- Status Selector -->
                     <div x-data="{ status: '{{ $order->status }}' }">
-                        <form action="{{ route('admin.orders.updateStatus', $order) }}" @submit.prevent="
-                            const params = new URLSearchParams();
-                            params.set('status', status);
-                            params.set('_method', 'PATCH');
-                            params.set('_token', '{{ csrf_token() }}');
-                            fetch(action, {
-                                method: 'POST',
-                                headers: {'Content-Type': 'application/x-www-form-urlencoded'},
-                                body: params
-                            }).then(r => {
-                                if (r.ok) location.reload();
-                            });
-                        ">
-                            <select x-model="status" name="status" @change="$el.form.requestSubmit()"
+                        <form method="POST" action="{{ route('admin.orders.updateStatus', $order) }}">
+                            @csrf
+                            @method('PATCH')
+                            <select x-model="status" name="status" @change="$el.form.submit()"
                                 class="pl-3 pr-10 py-1.5 text-sm font-semibold rounded-full border-0 cursor-pointer focus:outline-none focus:ring-2 focus:ring-indigo-500
                                 {{ $statusClasses[$order->status] ?? $statusClasses['pending'] }}">
                                 <option value="pending" {{ $order->status === 'pending' ? 'selected' : '' }}>In afwachting</option>
